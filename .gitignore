@@ -42,10 +42,7 @@ test-results/
 # Electron / Capacitor / Gradle build outputs are rebuilt locally from source.
 # Do not ship compiled desktop, Android wrapper binaries/JARs, Gradle caches,
 # build logs, or pbxproj+compiled iOS artifacts in the source repo.
-release/win-unpacked/
-release/mac/
-release/linux/
-release/builder-debug.yml
+release/
 android/.gradle/
 android/gradle/wrapper/gradle-wrapper.jar
 android/**/build/
