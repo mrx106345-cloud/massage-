@@ -1,0 +1,25 @@
+# Authorization & Role-Based Access Control (RBAC)
+
+roles:
+  user:
+    description: Standard registered user
+    permissions:
+      - chat:send_direct
+      - chat:read_direct
+      - group:create
+      - media:upload
+      - profile:update_own
+
+  group_admin:
+    description: Creator or promoted admin of a group chat
+    permissions:
+      - group:add_member
+      - group:remove_member
+      - group:update_metadata
+      - group:delete
+
+  system_admin:
+    description: System level administration
+    permissions:
+      - user:block
+      - report:review

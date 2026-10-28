@@ -1,0 +1,4 @@
+vitest.config.ts.timestamp-*.mjs
+coverage/
+dist/
+public/vendor

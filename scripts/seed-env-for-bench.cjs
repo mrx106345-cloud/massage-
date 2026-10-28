@@ -1,0 +1,45 @@
+'use strict';
+
+const { config } = require('dotenv');
+const path = require('path');
+
+config({ path: path.resolve(__dirname, '..', '.env') });
+
+process.env.PORT = '4125';
+process.env.JWT_SECRET = 'vitest-bench-bench-bench-bench-bench-bench-bench';
+process.env.NODE_ENV = 'development';
+process.env.DB_DRIVER = 'memory';
+process.env.DB_LOG = 'false';
+process.env.AUTO_MIGRATE = 'true';
+process.env.SOCKET_ENABLED = 'false';
+process.env.APP_ORIGIN = 'http://localhost:4125';
+process.env.CORS_ORIGIN = 'http://localhost:5173';
+process.env.TRUST_PROXY = 'false';
+process.env.HOST = '0.0.0.0';
+process.env.S3_ENDPOINT = '';
+process.env.S3_REGION = 'us-east-1';
+process.env.S3_BUCKET = 'bench-media';
+process.env.S3_ACCESS_KEY_ID = '';
+process.env.S3_SECRET_ACCESS_KEY = '';
+process.env.S3_OBJECT_URL_EXPIRES_IN = '900';
+process.env.E2EE_PREKEY_BUNDLE_COUNT = '100';
+process.env.METRICS_TOKEN = '';
+process.env.MAINTENANCE_MODE = 'false';
+process.env.LOGIN_MAX_ATTEMPTS = '10';
+process.env.LOGIN_LOCKOUT_MINUTES = '15';
+process.env.DB_POOL_MAX = '10';
+process.env.JWT_ACCESS_EXPIRES_IN = '15m';
+process.env.JWT_REFRESH_EXPIRES_IN = '30d';
+process.env.RATE_LIMIT_CHAT_PER_MIN = '120';
+process.env.SESSION_TTL_DAYS = '30';
+process.env.RATE_LIMIT_WINDOW_MS = '60000';
+process.env.RATE_LIMIT_MAX = '10000';
+process.env.RATE_LIMIT_AUTH_MAX = '10000';
+process.env.RATE_LIMIT_SENSITIVE_MAX = '10000';
+process.env.EMAIL_FROM = 'bench@bench.test';
+process.env.MAIL_WEBHOOK_URL = '';
+process.env.MAIL_WEBHOOK_TOKEN = '';
+process.env.EMAIL_VERIFICATION_TTL_HOURS = '24';
+process.env.PASSWORD_RESET_TTL_MINUTES = '30';
+process.env.REQUIRE_EMAIL_VERIFICATION = 'false';
+process.env.TOTP_ISSUER = 'Bench';

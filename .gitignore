@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+
+# Build and distribution
+dist/
+build/
+
+# Environment files (contains secrets)
+.env
+.env.*
+!.env.example
+
+# Test and coverage
+coverage/
+vitest.config.ts.timestamp-*.mjs
+*.log
+
+# Temporary files and SQLite databases
+tmp/
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/media/
+.freebuff/
+
+# Editor / OS files
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Generated build artifacts
+release/
+test-results/
+
+# Large generated binaries and build artifacts
+*.exe
+*.dll
+*.jar
+
+# Electron / Capacitor / Gradle build outputs are rebuilt locally from source.
+# Do not ship compiled desktop, Android wrapper binaries/JARs, Gradle caches,
+# build logs, or pbxproj+compiled iOS artifacts in the source repo.
+release/win-unpacked/
+release/mac/
+release/linux/
+release/builder-debug.yml
+android/.gradle/
+android/gradle/wrapper/gradle-wrapper.jar
+android/**/build/
+android/app/build/
+ios/App/App.xcworkspace/
+ios/DerivedData/
+ios/App/CapApp-SPM/.build/
+
+# UI screenshots are large binaries; keep them out of the default source tree.
+# Add them by hand if they are intentionally part of the repo.
+images/
+screenshot*.png
+ui-*.png

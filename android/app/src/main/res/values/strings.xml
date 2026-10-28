@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Aegis Chat</string>
+    <string name="title_activity_main">Aegis Chat</string>
+    <string name="package_name">chat.aegis.app</string>
+    <string name="custom_url_scheme">chat.aegis.app</string>
+</resources>

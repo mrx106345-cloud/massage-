@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Aegis Chat — end-to-end encrypted messaging</title>
+    <meta
+      name="description"
+      content="End-to-end encrypted 1-to-1 and group chat. Keys stay in your browser; the server only relays ciphertext."
+    />
+    <link rel="stylesheet" href="/css/app.css?v=2" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2314b8a6'/%3E%3Cpath d='M16 8l6 16h-3.2l-1.2-3.4h-3.2L13.2 24H10l6-16zm0 5.4l-1.1 4.2h2.2L16 13.4z' fill='%2304201d'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <!-- ------------------------------------------------------------------ -->
+    <!-- Server setup (bundled desktop/mobile builds only)                  -->
+    <!-- ------------------------------------------------------------------ -->
+    <div id="server-view" class="auth-view hidden">
+      <section class="auth-card" aria-labelledby="server-title">
+        <div class="brand-row">
+          <span class="logo">A</span>
+          <div>
+            <h1 id="server-title">Connect to a server</h1>
+            <p>This app needs the address of your Aegis server</p>
+          </div>
+        </div>
+
+        <form id="server-form" class="auth-form" novalidate>
+          <label class="field">
+            <span>Server address</span>
+            <input
+              name="server"
+              type="url"
+              inputmode="url"
+              autocomplete="url"
+              placeholder="https://chat.example.com"
+              required
+            />
+          </label>
+          <p class="form-error" id="server-error" role="alert"></p>
+          <button class="primary block" type="submit">Connect</button>
+        </form>
+
+        <p class="fineprint">
+          Ask whoever runs your Aegis deployment for this address. Nothing is sent until you connect
+          — keys and messages stay on this device and that server.
+        </p>
+      </section>
+    </div>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- Auth                                                               -->
+    <!-- ------------------------------------------------------------------ -->
+    <div id="auth-view" class="auth-view">
+      <section class="auth-card" aria-labelledby="auth-title">
+        <div class="brand-row">
+          <span class="logo">A</span>
+          <div>
+            <h1 id="auth-title">Aegis</h1>
+            <p>End-to-end encrypted chat</p>
+          </div>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Authentication mode">
+          <button
+            class="tab active"
+            type="button"
+            role="tab"
+            data-mode="login"
+            aria-selected="true"
+          >
+            Sign in
+          </button>
+          <button class="tab" type="button" role="tab" data-mode="signup" aria-selected="false">
+            Create account
+          </button>
+        </div>
+
+        <form id="login-form" class="auth-form" novalidate>
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="username" required />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <label class="field hidden" id="totp-row">
+            <span>Two-factor code</span>
+            <input
+              name="totpCode"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              placeholder="123456 or a recovery code"
+            />
+          </label>
+          <p class="form-error" id="login-error" role="alert"></p>
+          <button class="primary block" type="submit">Sign in</button>
+        </form>
+
+        <form id="signup-form" class="auth-form hidden" novalidate>
+          <label class="field">
+            <span>Username</span>
+            <input
+              name="username"
+              autocomplete="username"
+              required
+              minlength="3"
+              maxlength="32"
+              pattern="[A-Za-z0-9_]{3,32}"
+            />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input name="email" type="email" autocomplete="email" required />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input
+              name="password"
+              type="password"
+              autocomplete="new-password"
+              required
+              minlength="8"
+              placeholder="At least 8 characters"
+            />
+          </label>
+          <p class="form-error" id="signup-error" role="alert"></p>
+          <button class="primary block" type="submit">Create account</button>
+        </form>
+
+        <p class="fineprint">
+          Your identity keys are generated and stored in this browser. The server only relays
+          ciphertext and never sees plaintext or private keys.
+        </p>
+      </section>
+    </div>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- App                                                                -->
+    <!-- ------------------------------------------------------------------ -->
+    <div id="app-view" class="app-view hidden">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div class="brand-mini"><span class="logo small">A</span><span>Aegis</span></div>
+          <button id="logout-button" class="ghost sm" type="button">Sign out</button>
+        </div>
+
+        <div class="me-row">
+          <span id="me-avatar" class="avatar"></span>
+          <div class="me-meta">
+            <strong id="me-name"></strong>
+            <span id="me-status">Encrypted session</span>
+          </div>
+        </div>
+
+        <div class="sidebar-actions">
+          <button id="new-chat-button" class="primary sm" type="button">New chat</button>
+          <button id="new-group-button" class="ghost sm" type="button">New group</button>
+        </div>
+
+        <input
+          id="thread-filter"
+          class="filter"
+          type="search"
+          placeholder="Search conversations"
+          aria-label="Search conversations"
+        />
+
+        <nav id="thread-list" class="thread-list" aria-label="Conversations"></nav>
+
+        <footer class="sidebar-foot">
+          <span id="relay-state" class="relay off">offline</span>
+          <span>X25519 · AES-256-GCM</span>
+        </footer>
+      </aside>
+
+      <main class="chat-pane">
+        <div id="empty-state" class="empty-state">
+          <div class="empty-art">🔒</div>
+          <h2>Select a conversation</h2>
+          <p>Messages are sealed in this browser before they reach the server.</p>
+        </div>
+
+        <section id="chat-view" class="chat-view hidden" aria-label="Conversation">
+          <header class="chat-head">
+            <button
+              id="back-button"
+              class="ghost sm"
+              type="button"
+              aria-label="Back to conversations"
+            >
+              ←
+            </button>
+            <span id="chat-avatar" class="avatar"></span>
+            <div class="chat-title">
+              <h2 id="chat-name"></h2>
+              <p id="chat-meta"></p>
+            </div>
+            <span id="chat-lock" class="lock-pill">E2EE</span>
+            <button id="verify-button" class="ghost sm hidden" type="button">Verify</button>
+            <button id="group-info-button" class="ghost sm hidden" type="button">
+              <span class="sr-only">Group members</span>
+            </button>
+          </header>
+
+          <div id="chat-notice" class="notice hidden">
+            <span id="chat-notice-text"></span>
+            <button id="request-key" class="ghost sm hidden" type="button">Request key</button>
+          </div>
+
+          <div id="message-list" class="message-list" aria-live="polite"></div>
+
+          <div id="attachment-preview" class="attachment-preview hidden" aria-live="polite"></div>
+
+          <form id="composer" class="composer" autocomplete="off">
+            <button
+              id="attach-button"
+              class="ghost icon"
+              type="button"
+              aria-label="Attach an encrypted file"
+              title="Attach a file"
+            >
+              📎
+            </button>
+            <input id="file-input" type="file" hidden />
+            <textarea
+              id="composer-input"
+              rows="1"
+              maxlength="4000"
+              placeholder="Write an encrypted message…"
+              aria-label="Message"
+            ></textarea>
+            <button id="send-button" class="primary" type="submit">Send</button>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <div id="modal-host"></div>
+    <div id="toast-host" class="toast-host" aria-live="polite"></div>
+
+    <script src="/vendor/nacl-fast.min.js"></script>
+    <script src="/vendor/socket.io.min.js"></script>
+    <script type="module" src="/js/app.js?v=5"></script>
+  </body>
+</html>
